@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "advanced-missile",
+	"version": "${version}",
+	"name": "Advanced Missile",
+	"description": "A mod focused on implementing advanced missile technology.",
+	"authors": [
+		"Alvisssss"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/advanced-missile/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.alvisssss.advancedmissile.AdvancedMissile"
+		],
+		"client": [
+			"net.alvisssss.advancedmissile.AdvancedMissileClient"
+		],
+		"fabric-datagen": [
+			"net.alvisssss.advancedmissile.AdvancedMissileDataGenerator"
+		]
+	},
+	"mixins": [
+		"advanced-missile.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
