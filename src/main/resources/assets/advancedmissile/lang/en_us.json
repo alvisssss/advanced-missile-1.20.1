@@ -1,0 +1,6 @@
+{
+  "item.advancedmissile.launcher" : "Launcher",
+  "item.advancedmissile.turret" : "Turret",
+
+  "itemgroup.launcher": "Advanced Missile"
+}

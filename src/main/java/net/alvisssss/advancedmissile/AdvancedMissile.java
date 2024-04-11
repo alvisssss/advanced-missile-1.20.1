@@ -1,5 +1,7 @@
 package net.alvisssss.advancedmissile;
 
+import net.alvisssss.advancedmissile.block.ModBlocks;
+import net.alvisssss.advancedmissile.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -11,6 +13,8 @@ public class AdvancedMissile implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Hello Fabric world!");
+
+		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
 	}
 }
