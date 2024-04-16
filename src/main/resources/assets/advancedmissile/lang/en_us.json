@@ -1,6 +1,8 @@
 {
   "item.advancedmissile.launcher" : "Launcher",
-  "item.advancedmissile.turret" : "Turret",
+  "item.advancedmissile.missile" : "Missile",
 
-  "itemgroup.launcher": "Advanced Missile"
+  "itemgroup.launcher": "Advanced Missile",
+
+  "block.advancedmissile.turret_station": "Turret Station"
 }

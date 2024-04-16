@@ -15,13 +15,14 @@ public class ModItemGroups {
             new Identifier(AdvancedMissile.MOD_ID, "launcher"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.launcher"))
                     .icon(() -> new ItemStack(ModItems.LAUNCHER)).entries((displayContext, entries) -> {
-                        entries.add(ModItems.TURRET);
+
+                        entries.add(ModItems.MISSILE);
                         entries.add(ModItems.LAUNCHER);
 
                         entries.add(ModBlocks.TURRET_STATION);
                     }).build());
 
-    private static void registerItemGroups() {
+    public static void registerItemGroups() {
         AdvancedMissile.LOGGER.info("Registering Item Groups for " + AdvancedMissile.MOD_ID);
     }
 }

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:gunpowder"
+    },
+    "D": {
+      "item": "minecraft:iron_bars"
+    },
+    "E": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "pattern": [
+    " B ",
+    "D D",
+    "ECE"
+  ],
+  "result": {
+    "item": "advancedmissile:missile"
+  },
+  "show_notification": true
+}
