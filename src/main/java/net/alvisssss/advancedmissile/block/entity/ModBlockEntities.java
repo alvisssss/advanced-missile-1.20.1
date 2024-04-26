@@ -9,10 +9,10 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModBlockEntities {
-    public static final BlockEntityType<TurretStationBlockEntity> TURRET_STATION_BLOCK_ENTITY =
-            Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(AdvancedMissile.MOD_ID, "turret_station_be"),
-                    FabricBlockEntityTypeBuilder.create(TurretStationBlockEntity::new,
-                            ModBlocks.TURRET_STATION).build());
+    public static final BlockEntityType<UpgradingFactoryBlockEntity> UPGRADING_FACTORY_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(AdvancedMissile.MOD_ID, "upgrading_factory_be"),
+                    FabricBlockEntityTypeBuilder.create(UpgradingFactoryBlockEntity::new,
+                            ModBlocks.UPGRADING_FACTORY).build());
 
     public static void registerBlockEntities() {
         AdvancedMissile.LOGGER.info("Registering Block Entities for "+ AdvancedMissile.MOD_ID);

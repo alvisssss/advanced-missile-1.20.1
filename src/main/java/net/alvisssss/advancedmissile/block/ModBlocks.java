@@ -2,6 +2,7 @@ package net.alvisssss.advancedmissile.block;
 
 import net.alvisssss.advancedmissile.AdvancedMissile;
 import net.alvisssss.advancedmissile.block.custom.TurretBlock;
+import net.alvisssss.advancedmissile.block.custom.UpgradingFactoryBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -15,6 +16,14 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
     public static final Block TURRET_STATION = registerBlock("turret_station",
             new TurretBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK))); // Copied from Iron Block.
+
+    public static final Block UPGRADING_FACTORY = registerBlock("upgrading_factory",
+            new UpgradingFactoryBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
+
+
+
+
+
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
         return Registry.register(Registries.BLOCK, new Identifier(AdvancedMissile.MOD_ID, name), block);

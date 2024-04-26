@@ -1,47 +1,58 @@
 package net.alvisssss.advancedmissile.screen;
 
 import net.alvisssss.advancedmissile.block.entity.UpgradingFactoryBlockEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.SmithingRecipe;
+import net.minecraft.screen.*;
+import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
+import org.jetbrains.annotations.Nullable;
 
-public class TurretSettingScreenHandler extends ScreenHandler {
+import java.util.List;
+import java.util.OptionalInt;
 
+public class UpgradingScreenHandler
+        extends ScreenHandler {
     private final Inventory inventory;
-    private final PropertyDelegate propertyDelegate;
-    private final UpgradingFactoryBlockEntity blockEntity;
+    public final UpgradingFactoryBlockEntity blockEntity;
 
-    public TurretSettingScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
-        this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()),
-                new ArrayPropertyDelegate(3));
+    public UpgradingScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
+        this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()));
     }
 
-    public TurretSettingScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity blockEntity, PropertyDelegate arrayPropertyDelegate) {
-        super(ModScreenHandlers.TURRET_SETTING_SCREEN_HANDLER, syncId);
-        checkSize(((Inventory) blockEntity),3);
+    public UpgradingScreenHandler(int syncId, PlayerInventory playerInventory,
+                                  BlockEntity blockEntity) {
+        super(ModScreenHandlers.UPGRADING_SCREEN_HANDLER, syncId);
+        checkSize(((Inventory) blockEntity), 5);
         this.inventory = ((Inventory) blockEntity);
-        playerInventory.onOpen(playerInventory.player);
-        this.propertyDelegate = arrayPropertyDelegate;
+        inventory.onOpen(playerInventory.player);
         this.blockEntity = ((UpgradingFactoryBlockEntity) blockEntity);
 
-        // Slot positions
-        this.addSlot(new Slot(inventory, 0, 80, 11));
-        this.addSlot(new Slot(inventory, 1, 80, 59));
-        this.addSlot(new Slot(inventory, 2, 55,34));
+        this.addSlot(new Slot(inventory, 0, 8, 48)); // Missile
+        this.addSlot(new Slot(inventory, 1, 26, 48)); // Fuel
+        this.addSlot(new Slot(inventory, 2, 44, 48)); // Warhead
+        this.addSlot(new Slot(inventory, 3, 98, 48)); // Output
+        this.addSlot(new Slot(inventory, 4, 44, 30)); // Locator
+
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
-        addProperties(arrayPropertyDelegate);
+
     }
 
-    // Always the same for inventory screen handling.
+
     @Override
     public ItemStack quickMove(PlayerEntity player, int invSlot) {
         ItemStack newStack = ItemStack.EMPTY;
@@ -67,10 +78,13 @@ public class TurretSettingScreenHandler extends ScreenHandler {
         return newStack;
     }
 
+
+
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
     }
+
     private void addPlayerInventory(PlayerInventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {
@@ -85,3 +99,4 @@ public class TurretSettingScreenHandler extends ScreenHandler {
         }
     }
 }
+

@@ -1,45 +1,24 @@
 package net.alvisssss.advancedmissile.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.alvisssss.advancedmissile.AdvancedMissile;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
-public class ModScreenHandlers extends HandledScreen<TurretSettingScreenHandler> {
+public class ModScreenHandlers {
+    public static final ScreenHandlerType<TurretSettingScreenHandler> TURRET_SETTING_SCREEN_HANDLER =
+            Registry.register(Registries.SCREEN_HANDLER, new Identifier(AdvancedMissile.MOD_ID, "turret_setting"),
+                    new ExtendedScreenHandlerType<>(TurretSettingScreenHandler::new));
 
-    private static final Identifier TEXTURE = new Identifier(AdvancedMissile.MOD_ID, "textures/gui/turret_station_gui.png");
-    public ModScreenHandlers(TurretSettingScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
-    }
+    public static final ScreenHandlerType<UpgradingScreenHandler> UPGRADING_SCREEN_HANDLER =
+            Registry.register(Registries.SCREEN_HANDLER, new Identifier(AdvancedMissile.MOD_ID, "upgrading"),
+                    new ExtendedScreenHandlerType<>(UpgradingScreenHandler::new));
 
-    @Override
-    protected void init() {
-        super.init();
-        titleY = 1000;
-        playerInventoryTitleY = 1000;
-    }
 
-    @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1f,1f,1f,1f);
-        RenderSystem._setShaderTexture(0, TEXTURE);
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
-
-        context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
-
-    }
-
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
-        render
-        super.render(context, mouseX, mouseY, delta);
-        drawMouseoverTooltip(context, mouseX, mouseY, delta);
+    public static void registerScreenHandlers() {
+        AdvancedMissile.LOGGER.info("Registering Screen Handlers for " + AdvancedMissile.MOD_ID);
     }
 }

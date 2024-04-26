@@ -1,8 +1,10 @@
 {
   "item.advancedmissile.launcher" : "Launcher",
   "item.advancedmissile.missile" : "Missile",
+  "item.advancedmissile.locator" : "Locator",
 
   "itemgroup.launcher": "Advanced Missile",
 
-  "block.advancedmissile.turret_station": "Turret Station"
+  "block.advancedmissile.turret_station": "Turret Station",
+  "block.advancedmissile.upgrading_factory": "Upgrading Factory"
 }

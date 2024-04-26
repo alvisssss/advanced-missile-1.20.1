@@ -18,8 +18,10 @@ public class ModItemGroups {
 
                         entries.add(ModItems.MISSILE);
                         entries.add(ModItems.LAUNCHER);
+                        entries.add(ModItems.LOCATOR);
 
                         entries.add(ModBlocks.TURRET_STATION);
+                        entries.add(ModBlocks.UPGRADING_FACTORY);
                     }).build());
 
     public static void registerItemGroups() {
