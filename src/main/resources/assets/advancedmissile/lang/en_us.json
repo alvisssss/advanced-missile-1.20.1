@@ -6,5 +6,7 @@
   "itemgroup.launcher": "Advanced Missile",
 
   "block.advancedmissile.turret_station": "Turret Station",
-  "block.advancedmissile.upgrading_factory": "Upgrading Factory"
+  "block.advancedmissile.upgrading_factory": "Upgrading Factory",
+
+  "container.upgrade": "Upgrading Factory"
 }

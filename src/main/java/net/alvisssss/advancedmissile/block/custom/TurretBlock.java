@@ -1,16 +1,16 @@
 package net.alvisssss.advancedmissile.block.custom;
 
-import net.alvisssss.advancedmissile.block.entity.ModBlockEntities;
-import net.alvisssss.advancedmissile.block.entity.UpgradingFactoryBlockEntity;
 import net.alvisssss.advancedmissile.item.ModItems;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -20,6 +20,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class TurretBlock extends Block {
 
@@ -37,5 +39,11 @@ public class TurretBlock extends Block {
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+        super.appendTooltip(stack, world, tooltip, options);
+        tooltip.add(Text.literal("WIP"));
     }
 }

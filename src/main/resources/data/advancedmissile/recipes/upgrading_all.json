@@ -1,0 +1,12 @@
+{
+  "type": "advancedmissile:upgrading",
+  "ingredients": [
+    {
+      "item": "advancedmissile:missile"
+    }
+  ],
+  "output": {
+    "item": "advancedmissile:missile",
+    "count": 1
+  }
+}

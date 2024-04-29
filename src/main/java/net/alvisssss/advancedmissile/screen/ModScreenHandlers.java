@@ -8,10 +8,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
-public class ModScreenHandlers {
+public class ModScreenHandlers {/*
     public static final ScreenHandlerType<TurretSettingScreenHandler> TURRET_SETTING_SCREEN_HANDLER =
             Registry.register(Registries.SCREEN_HANDLER, new Identifier(AdvancedMissile.MOD_ID, "turret_setting"),
                     new ExtendedScreenHandlerType<>(TurretSettingScreenHandler::new));
+                    */
 
     public static final ScreenHandlerType<UpgradingScreenHandler> UPGRADING_SCREEN_HANDLER =
             Registry.register(Registries.SCREEN_HANDLER, new Identifier(AdvancedMissile.MOD_ID, "upgrading"),

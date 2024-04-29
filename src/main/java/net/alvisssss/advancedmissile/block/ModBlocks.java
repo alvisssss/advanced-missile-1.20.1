@@ -17,6 +17,9 @@ public class ModBlocks {
     public static final Block TURRET_STATION = registerBlock("turret_station",
             new TurretBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK))); // Copied from Iron Block.
 
+    //public static final Block UPGRADING_FACTORY = registerBlock("upgrading_factory",
+      //      new UpgradingFactoryBlockOld(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
+
     public static final Block UPGRADING_FACTORY = registerBlock("upgrading_factory",
             new UpgradingFactoryBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
 

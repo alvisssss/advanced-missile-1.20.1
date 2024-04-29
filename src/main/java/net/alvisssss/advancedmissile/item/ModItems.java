@@ -3,6 +3,7 @@ package net.alvisssss.advancedmissile.item;
 import net.alvisssss.advancedmissile.AdvancedMissile;
 import net.alvisssss.advancedmissile.item.custom.LauncherItem;
 import net.alvisssss.advancedmissile.item.custom.LocatorItem;
+import net.alvisssss.advancedmissile.item.custom.MissileItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -13,7 +14,7 @@ public class ModItems {
 
     // New items
     public static final Item LAUNCHER = registerItem("launcher", new LauncherItem(new FabricItemSettings()));
-    public static final Item MISSILE = registerItem("missile", new Item(new FabricItemSettings()));
+    public static final Item MISSILE = registerItem("missile", new MissileItem(new FabricItemSettings()));
     public static final Item LOCATOR = registerItem("locator", new LocatorItem(new FabricItemSettings()));
 
     private static Item registerItem(String name, Item item) {

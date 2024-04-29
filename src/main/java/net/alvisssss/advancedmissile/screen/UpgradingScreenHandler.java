@@ -1,102 +1,87 @@
 package net.alvisssss.advancedmissile.screen;
 
-import net.alvisssss.advancedmissile.block.entity.UpgradingFactoryBlockEntity;
+import net.alvisssss.advancedmissile.block.ModBlocks;
+import net.alvisssss.advancedmissile.item.ModItems;
+import net.alvisssss.advancedmissile.recipe.UpgradingRecipe;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmithingRecipe;
-import net.minecraft.screen.*;
+import net.minecraft.screen.ForgingScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.ForgingSlotsManager;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.OptionalInt;
 
 public class UpgradingScreenHandler
-        extends ScreenHandler {
-    private final Inventory inventory;
-    public final UpgradingFactoryBlockEntity blockEntity;
+        extends ForgingScreenHandler {
 
-    public UpgradingScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
-        this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()));
+    private final World world;
+    @Nullable
+    private RecipeEntry<UpgradingRecipe> currentRecipe;
+    private final List<RecipeEntry<UpgradingRecipe>> recipes;
+
+    public UpgradingScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
+        super(ModScreenHandlers.UPGRADING_SCREEN_HANDLER, syncId, playerInventory, ScreenHandlerContext.EMPTY);
+        this.world = playerInventory.player.getWorld();
+        this.recipes = this.world.getRecipeManager().listAllOfType(UpgradingRecipe.Type.INSTANCE);
     }
-
-    public UpgradingScreenHandler(int syncId, PlayerInventory playerInventory,
-                                  BlockEntity blockEntity) {
-        super(ModScreenHandlers.UPGRADING_SCREEN_HANDLER, syncId);
-        checkSize(((Inventory) blockEntity), 5);
-        this.inventory = ((Inventory) blockEntity);
-        inventory.onOpen(playerInventory.player);
-        this.blockEntity = ((UpgradingFactoryBlockEntity) blockEntity);
-
-        this.addSlot(new Slot(inventory, 0, 8, 48)); // Missile
-        this.addSlot(new Slot(inventory, 1, 26, 48)); // Fuel
-        this.addSlot(new Slot(inventory, 2, 44, 48)); // Warhead
-        this.addSlot(new Slot(inventory, 3, 98, 48)); // Output
-        this.addSlot(new Slot(inventory, 4, 44, 30)); // Locator
-
-
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
-
-    }
-
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int invSlot) {
-        ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(invSlot);
-        if (slot != null && slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
-            if (invSlot < this.inventory.size()) {
-                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (originalStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-        }
-
-        return newStack;
+    protected boolean canTakeOutput(PlayerEntity player, boolean present) {
+        return this.currentRecipe != null && this.currentRecipe.value().matches(this.input, this.world);
     }
-
-
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+    protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
+        stack.onCraft(player.getWorld(), player, stack.getCount());
+        this.decrementStack(0, 1);
+        this.decrementStack(1, this.input.getStack(1).getCount());
+        this.decrementStack(2, this.input.getStack(2).getCount());
     }
-
-    private void addPlayerInventory(PlayerInventory playerInventory) {
-        for (int i = 0; i < 3; ++i) {
-            for (int l = 0; l < 9; ++l) {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
-            }
+    private void decrementStack(int slot, int count) {
+        ItemStack itemStack = this.input.getStack(slot);
+        if (!itemStack.isEmpty()) {
+            itemStack.decrement(count);
+            this.input.setStack(slot, itemStack);
         }
     }
+    @Override
+    protected boolean canUse(BlockState state) {
+        return state.isOf(ModBlocks.UPGRADING_FACTORY);
+    }
 
-    private void addPlayerHotbar(PlayerInventory playerInventory) {
-        for (int i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+    @Override
+    public void updateResult() {
+        List<RecipeEntry<UpgradingRecipe>> list = this.world.getRecipeManager().getAllMatches(UpgradingRecipe.Type.INSTANCE, this.input, this.world);
+        if (list.isEmpty()) {
+            this.output.setStack(0, ItemStack.EMPTY);
+        } else {
+            RecipeEntry<UpgradingRecipe> recipeEntry = list.get(0);
+            ItemStack itemStack = recipeEntry.value().craft(this.input, this.world.getRegistryManager());
+
+                this.currentRecipe = recipeEntry;
+                this.output.setStack(0, itemStack);
+
         }
+    }
+    @Override
+    protected ForgingSlotsManager getForgingSlotsManager() {
+        return ForgingSlotsManager.create()
+                .input(0, 8, 48, stack -> stack.getItem() == ModItems.MISSILE) // Missile
+                .input(1, 26, 48, stack -> stack.getItem() == Items.GUNPOWDER) // Fuel
+                .input(2, 44, 48, stack -> stack.getItem() == Items.TNT) // Warhead
+                .input(3, 44, 30, stack -> stack.getItem() == ModItems.LOCATOR) // Locator
+                .output(4, 98, 48).build(); // Output
+    }
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        this.dropInventory(player, this.input);
     }
 }
-

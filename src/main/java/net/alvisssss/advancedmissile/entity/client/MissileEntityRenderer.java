@@ -35,7 +35,7 @@ public class MissileEntityRenderer extends EntityRenderer<MissileEntity> {
 
     @Override
     public void render(MissileEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        matrices.scale(1f,1f,1f);
+        matrices.scale(2f,2f,2f);
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 

@@ -1,9 +1,7 @@
 package net.alvisssss.advancedmissile;
 
 import net.alvisssss.advancedmissile.block.ModBlocks;
-import net.alvisssss.advancedmissile.block.entity.ModBlockEntities;
 import net.alvisssss.advancedmissile.entity.ModEntities;
-import net.alvisssss.advancedmissile.entity.custom.MissileEntity;
 import net.alvisssss.advancedmissile.item.ModItemGroups;
 import net.alvisssss.advancedmissile.item.ModItems;
 import net.alvisssss.advancedmissile.recipe.ModRecipes;
@@ -21,7 +19,7 @@ public class AdvancedMissile implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		ModBlockEntities.registerBlockEntities();
+		//ModBlockEntities.registerBlockEntities();
 		ModEntities.registerModEntities();
 
 		ModItemGroups.registerItemGroups();

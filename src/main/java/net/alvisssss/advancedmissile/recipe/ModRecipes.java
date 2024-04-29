@@ -7,6 +7,14 @@ import net.minecraft.util.Identifier;
 
 public class ModRecipes {
     public static void registerRecipes() {
+        /*
+        Registry.register(Registries.RECIPE_SERIALIZER, new Identifier(AdvancedMissile.MOD_ID, UpgradingRecipe.Serializer.ID),
+                UpgradingRecipe.Serializer.INSTANCE);
+        Registry.register(Registries.RECIPE_TYPE, new Identifier(AdvancedMissile.MOD_ID, UpgradingRecipe.Type.ID),
+                UpgradingRecipe.Type.INSTANCE);
+
+         */
+
         Registry.register(Registries.RECIPE_SERIALIZER, new Identifier(AdvancedMissile.MOD_ID, UpgradingRecipe.Serializer.ID),
                 UpgradingRecipe.Serializer.INSTANCE);
         Registry.register(Registries.RECIPE_TYPE, new Identifier(AdvancedMissile.MOD_ID, UpgradingRecipe.Type.ID),

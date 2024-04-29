@@ -14,7 +14,7 @@ public class ModItemGroups {
     public static final ItemGroup MISSILE_GROUP = Registry.register(Registries.ITEM_GROUP,
             new Identifier(AdvancedMissile.MOD_ID, "launcher"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.launcher"))
-                    .icon(() -> new ItemStack(ModItems.LAUNCHER)).entries((displayContext, entries) -> {
+                    .icon(() -> new ItemStack(ModItems.MISSILE)).entries((displayContext, entries) -> {
 
                         entries.add(ModItems.MISSILE);
                         entries.add(ModItems.LAUNCHER);
