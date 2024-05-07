@@ -66,12 +66,9 @@ public class LauncherItem extends RangedWeaponItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         if (!world.isClient()) {
-            // Look for ModItems.MISSILE in the player's inventory
             ItemStack missileStack = findMissileInInventory(user, hand);
             if (!missileStack.isEmpty()) {
-                // Spawn MissileEntity and write NBT data from ModItems.MISSILE to the entity
                 spawnMissileEntity(world, user, missileStack);
-                // Play sound and consume item
                 if (!user.getAbilities().creativeMode) {
                     missileStack.decrement(1);
                 }
@@ -112,19 +109,26 @@ public class LauncherItem extends RangedWeaponItem {
         float speed = 2.55f; // Risk crashing over 3.15f.
 
         NbtCompound nbt = missileStack.getOrCreateNbt();
-        nbt.putFloat("speed", speed);
+        nbt.putFloat("speed", speed); // Speed recorded into the missile if needed.
 
-        MissileEntity missile1 = new MissileEntity(world, user, nbt);
-
-        missile1.readNbt(missileStack.getNbt());
+        MissileEntity missile1 = new MissileEntity(world, user, nbt); // Instantiates the missile entity.
 
         Vec3d vec3d = user.getOppositeRotationVector(1.0f);
         Quaternionf quaternionf = new Quaternionf().setAngleAxis(0.0f, vec3d.x, vec3d.y, vec3d.z);
         Vec3d vec3d2 = user.getRotationVec(1.0f);
         Vector3f vector3f = vec3d2.toVector3f().rotate(quaternionf);
-
+        // Sets the missile's velocity appropriately. (Copied from CrossbowItem).
         missile1.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, 1.0f);
 
-        world.spawnEntity(missile1);
+        world.spawnEntity(missile1); // Spawns the missile.
+
+        Vec3d cameraPos = user.getCameraPosVec(1.0f);
+        Vec3d lookVector = user.getRotationVec(1.0f);
+
+        double newX = cameraPos.x + lookVector.x;
+        double newY = cameraPos.y + lookVector.y;
+        double newZ = cameraPos.z + lookVector.z;
+        // Setting the missile's position in the world.
+        missile1.refreshPositionAndAngles(newX, newY, newZ, missile1.getYaw(), missile1.getPitch());
     }
 }

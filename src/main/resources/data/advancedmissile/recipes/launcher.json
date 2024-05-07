@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:tripwire_hook"
+    },
+    "D": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "   ",
+    "DDD",
+    "CD "
+  ],
+  "result": {
+    "item": "advancedmissile:launcher"
+  },
+  "show_notification": true
+}

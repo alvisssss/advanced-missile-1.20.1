@@ -16,9 +16,9 @@
     }
   },
   "pattern": [
-    " B ",
-    "D D",
-    "ECE"
+    " DB",
+    "E D",
+    "CE "
   ],
   "result": {
     "item": "advancedmissile:missile"

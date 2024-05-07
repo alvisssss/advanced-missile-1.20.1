@@ -11,6 +11,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModEntities {
+
+    // Registers the missile using MissileEntity class.
     public static final EntityType<MissileEntity> MISSILE = Registry.register(Registries.ENTITY_TYPE,
             new Identifier(AdvancedMissile.MOD_ID, "missile"),
             FabricEntityTypeBuilder.<MissileEntity>create(SpawnGroup.MISC, MissileEntity::new)

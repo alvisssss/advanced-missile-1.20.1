@@ -7,8 +7,6 @@ import net.alvisssss.advancedmissile.item.ModItems;
 import net.alvisssss.advancedmissile.recipe.ModRecipes;
 import net.alvisssss.advancedmissile.screen.ModScreenHandlers;
 import net.fabricmc.api.ModInitializer;
-
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +17,6 @@ public class AdvancedMissile implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		//ModBlockEntities.registerBlockEntities();
 		ModEntities.registerModEntities();
 
 		ModItemGroups.registerItemGroups();

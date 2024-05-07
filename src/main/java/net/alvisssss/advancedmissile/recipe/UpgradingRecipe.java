@@ -5,7 +5,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -28,32 +27,29 @@ public class UpgradingRecipe implements Recipe<Inventory> {
 
     @Override
     public boolean matches(Inventory inventory, World world) {
-
+        // True if missile slot is not empty and any other input slots are not empty
         return this.recipeItems.get(0).test(inventory.getStack(0))
                 && (!inventory.getStack(1).isEmpty() || !inventory.getStack(2).isEmpty() || !inventory.getStack(3).isEmpty());
     }
 
     @Override
     public ItemStack craft(Inventory inventory, DynamicRegistryManager registryManager) {
-        NbtCompound nbtCompoundFirst = this.output.getNbt();
         ItemStack itemStack = this.output.copy();
 
-        NbtCompound nbtCompound = inventory.getStack(0).getNbt();
-        NbtCompound nbtCompound2 = inventory.getStack(3).getNbt();
-        if (nbtCompoundFirst != null) {
-            itemStack.setNbt(nbtCompoundFirst.copy());
+        // NBT data transfer
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack ingredientStack = inventory.getStack(i);
+            if (!ingredientStack.isEmpty() && ingredientStack.hasNbt()) {
+                itemStack.getOrCreateNbt().copyFrom(ingredientStack.getNbt());
+            }
         }
-        if (nbtCompound != null) {
-            itemStack.setNbt(nbtCompound.copy());
-        }
-        if (nbtCompound2 != null) {
-            itemStack.setNbt(nbtCompound2.copy());
-        }
+
+        // Additional NBT data depending on the input, ie fuel and warhead.
         if (!inventory.getStack(1).isEmpty()) {
             itemStack.getOrCreateNbt().putInt("fuel_count", inventory.getStack(1).getCount() + itemStack.getOrCreateNbt().getInt("fuel_count"));
         }
         if (!inventory.getStack(2).isEmpty()) {
-            itemStack.getOrCreateNbt().putInt("warhead_count", inventory.getStack(2).getCount() + itemStack.getOrCreateNbt().getInt("warhead_count"));
+            itemStack.getOrCreateNbt().putInt("tnt_count", inventory.getStack(2).getCount() + itemStack.getOrCreateNbt().getInt("tnt_count"));
         }
         return itemStack;
     }
@@ -90,14 +86,10 @@ public class UpgradingRecipe implements Recipe<Inventory> {
             implements RecipeSerializer<UpgradingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
         public static final String ID = "upgrading";
-/*
-        private static final Codec<SmithingTransformRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ((MapCodec)Ingredient.ALLOW_EMPTY_CODEC.fieldOf("missile")).forGetter(recipe -> recipe.missile)
-                , ((MapCodec)Ingredient.ALLOW_EMPTY_CODEC.fieldOf("fuel")).forGetter(recipe -> recipe.fuel)
-                , ((MapCodec)Ingredient.ALLOW_EMPTY_CODEC.fieldOf("warhead")).forGetter(recipe -> recipe.warhead)
-                , ((MapCodec)Ingredient.ALLOW_EMPTY_CODEC.fieldOf("locator")).forGetter(recipe -> recipe.locator)
-                , ((MapCodec)RecipeCodecs.CRAFTING_RESULT.fieldOf("output")).forGetter(recipe -> recipe.output)).apply((Applicative<URecipe, ?>)instance, URecipe::new));
-                */
+
+        // Codec finds any json file with type "upgrading" specified.
+        // Checks field called "ingredients" and puts all items into a list in order.
+        // Checks field called "output" for the output item.
         public static final Codec<UpgradingRecipe> CODEC = RecordCodecBuilder.create(in -> in.group(
                 validateAmount(Ingredient.DISALLOW_EMPTY_CODEC, 9).fieldOf("ingredients").forGetter(UpgradingRecipe::getIngredients),
                 RecipeCodecs.CRAFTING_RESULT.fieldOf("output").forGetter(r -> r.output)

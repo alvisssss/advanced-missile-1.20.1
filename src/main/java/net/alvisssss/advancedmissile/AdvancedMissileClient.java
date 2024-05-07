@@ -14,11 +14,10 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 public class AdvancedMissileClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        //HandledScreens.register(ModScreenHandlers.TURRET_SETTING_SCREEN_HANDLER, TurretSettingScreen::new);
 
-        HandledScreens.register(ModScreenHandlers.UPGRADING_SCREEN_HANDLER, UpgradingScreen::new);
+        HandledScreens.register(ModScreenHandlers.UPGRADING_SCREEN_HANDLER, UpgradingScreen::new); // Registers GUI
 
-        EntityRendererRegistry. register(ModEntities.MISSILE, MissileEntityRenderer::new);
-        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.MISSILE, MissileModel::getTexturedModelData);
+        EntityRendererRegistry. register(ModEntities.MISSILE, MissileEntityRenderer::new); // Registers Missile Entity to use MissileEntityRenderer.
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.MISSILE, MissileModel::getTexturedModelData); // Registers Missile Entity to have a MissileModel.
     }
 }

@@ -11,6 +11,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ModItemGroups {
+
+    // Registers all items into a tab in the creative inventory, with the missile texture as the logo.
     public static final ItemGroup MISSILE_GROUP = Registry.register(Registries.ITEM_GROUP,
             new Identifier(AdvancedMissile.MOD_ID, "launcher"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.launcher"))
