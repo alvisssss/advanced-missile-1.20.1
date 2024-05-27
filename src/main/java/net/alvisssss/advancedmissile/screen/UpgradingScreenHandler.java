@@ -78,7 +78,12 @@ public class UpgradingScreenHandler
                 .input(1, 26, 48, stack -> stack.getItem() == Items.GUNPOWDER) // Fuel
                 .input(2, 44, 48, stack -> stack.getItem() == Items.TNT) // Warhead
                 .input(3, 44, 30, stack -> stack.getItem() == ModItems.LOCATOR) // Locator
-                .output(4, 98, 48).build(); // Output
+                .output(4, 98, 48) // Missile output
+
+                //.input(5, 134, 30, stack -> stack.getItem() == ModItems.LAUNCH_TUBE) // Launch Tube
+                //.input(6, 134, 12, stack -> stack.getItem() == ModItems.CLU) // CLU
+                //.output(7, 80,30) // MANPAD output
+                .build();
     }
     @Override
     public void onClosed(PlayerEntity player) {

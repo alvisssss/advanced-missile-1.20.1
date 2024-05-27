@@ -1,6 +1,7 @@
 package net.alvisssss.advancedmissile.entity.custom;
 
 import net.alvisssss.advancedmissile.entity.ModEntities;
+import net.alvisssss.advancedmissile.item.ModItems;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -9,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -30,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class MissileEntity extends ProjectileEntity { // Where the fun begins.
+public class MissileEntity extends ProjectileEntity {
     @Nullable
     private Entity target;
 
@@ -52,6 +54,8 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
     private float additionalPower = 0.0f;
     private float speed;
 
+    private ItemStack MissileStack = new ItemStack(ModItems.MISSILE) ;
+
 
     public MissileEntity(EntityType<MissileEntity> missileEntityEntityType, World world) {
         super(missileEntityEntityType, world);
@@ -60,6 +64,10 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
     public MissileEntity(World world, LivingEntity owner, NbtCompound nbt) {
         // Extracting all data from the given NBT compound (if any) and putting them in class variables.
         this(ModEntities.MISSILE, world);
+
+        NbtCompound nbtCompound = this.MissileStack.getOrCreateNbt();
+        nbtCompound.copyFrom(nbt);
+
         this.setOwner(owner);
 
         if (nbt.contains("fuel_count")) {
@@ -107,7 +115,7 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (this.target != null) {
             nbt.putUuid("Target", this.target.getUuid());
@@ -124,7 +132,7 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.containsUuid("Target")) {
             this.targetUuid = nbt.getUuid("Target");
@@ -147,6 +155,13 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
             this.hasTarget = nbt.getBoolean("hasTarget");
         }
     }
+/*
+    @Override
+    protected ItemStack asItemStack() {
+        return this.MissileStack;
+    }
+
+ */
 
     @Override
     protected void initDataTracker() {
@@ -322,8 +337,9 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        // Creates an explosion with size according to the input ingredients.
-        this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
+        //if (this.cooldownTimer <= 0) { // Creates an explosion with size according to the input ingredients.
+            this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
+        //}
         this.hit = true;
         // Despawns and unloads chunks.
         this.discard();
@@ -338,8 +354,9 @@ public class MissileEntity extends ProjectileEntity { // Where the fun begins.
         BlockState blockState = this.getWorld().getBlockState(blockPos);
 
         if (blockState.getFluidState().isEmpty()) { // If block hit is not a fluid block.
-            // Creates an explosion with size according to the input ingredients.
-            this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
+            //if (this.cooldownTimer <= 0) { // Creates an explosion with size according to the input ingredients.
+                this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
+            //}
             this.hit = true;
             // Despawns and unloads chunks.
             this.discard();

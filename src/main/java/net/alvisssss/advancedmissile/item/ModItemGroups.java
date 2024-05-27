@@ -22,6 +22,9 @@ public class ModItemGroups {
                         entries.add(ModItems.LAUNCHER);
                         entries.add(ModItems.LOCATOR);
 
+                        entries.add(ModItems.CLU);
+                        //entries.add(ModItems.LAUNCH_TUBE);
+
                         entries.add(ModBlocks.TURRET_STATION);
                         entries.add(ModBlocks.UPGRADING_FACTORY);
                     }).build());

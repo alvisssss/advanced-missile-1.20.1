@@ -1,0 +1,8 @@
+{
+  "missile_fire_fail": {
+    "subtitle": "sounds.advancedmissile.missile_fire_fail",
+    "sounds": [
+      "advancedmissile:empty_gun_click"
+    ]
+  }
+}

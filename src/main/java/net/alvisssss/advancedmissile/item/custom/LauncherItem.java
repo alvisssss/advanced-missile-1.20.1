@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import net.alvisssss.advancedmissile.entity.custom.MissileEntity;
 import net.alvisssss.advancedmissile.item.ModItems;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +47,8 @@ import java.util.function.Predicate;
 
 
 public class LauncherItem extends RangedWeaponItem {
+
+    float playerYaw, playerPitch;
     public LauncherItem(Settings settings) {
         super(settings);
     }
@@ -76,6 +81,7 @@ public class LauncherItem extends RangedWeaponItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
+
         if (!world.isClient()) {
             ItemStack missileStack = findMissileInInventory(user, hand);
             if (!missileStack.isEmpty()) {
@@ -86,7 +92,44 @@ public class LauncherItem extends RangedWeaponItem {
                 return TypedActionResult.success(stack);
             }
         }
-        return TypedActionResult.pass(stack);
+/*
+
+        if (world.isClient) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            try {
+                GameOptions gameOptions = client.options;
+
+                Field fovField = GameOptions.class.getDeclaredField("fov");
+                fovField.setAccessible(true);
+
+                float zoomFactor = 0.1f;
+                float currentFov = fovField.getFloat(gameOptions);
+                fovField.setFloat(gameOptions, currentFov * zoomFactor);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+ */
+        return TypedActionResult.success(stack);
+    }
+
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        if (world.isClient()) {
+            user.setYaw(this.playerYaw);
+            user.setPitch(this.playerPitch);
+        }
+    }
+
+    @Override
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        if (world.isClient()) {
+            user.setYaw(this.playerYaw);
+            user.setPitch(this.playerPitch);
+        }
+        return stack;
     }
 
     private ItemStack findMissileInInventory(PlayerEntity user, Hand hand) {

@@ -41,9 +41,6 @@ public class LocatorItem extends Item {
         super(settings.maxCount(1));
     }
 
-    // Method called when the player right-clicks on a block (within distance).
-    // Collects and stores all the necessary NBT data in the item.
-    // Sends message to the player about the target and its coordinates.
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (!context.getWorld().isClient()) {
@@ -66,9 +63,6 @@ public class LocatorItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    // Method called when the player right-clicks on an entity (within distance and assuming the entity doesn't have other behaviours on right-click).
-    // Collects and stores all the necessary NBT data in the item.
-    // Sends message to the player about the target and its coordinates.
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
 
@@ -93,7 +87,6 @@ public class LocatorItem extends Item {
         return ActionResult.SUCCESS;
     }
 
-    // Called when the player uses the item (Not on block or entity).
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 
@@ -118,17 +111,13 @@ public class LocatorItem extends Item {
                     Math.max(vec3d.z, vec3d2.z) + boxSize
             );
 
-            // Casts a ray from the player's camera position, to the position where the ray would extend for the maxDistance and end at.
-            // Checks for entity within the given range.
             EntityHitResult entityHitResult = ProjectileUtil.raycast(user, vec3d, vec3d2, new Box(minCorner, maxCorner), entity -> true, maxDistance);
 
             if (!user.getItemCooldownManager().isCoolingDown(this)) {
 
-                user.getItemCooldownManager().set(this, 20); // Cooldown for 1 second.
+                user.getItemCooldownManager().set(this, 20);
 
-                if (entityHitResult != null) { // Successfully obtains an entity.
-                    // Collects and stores all the necessary NBT data in the item.
-                    // Sends message to the player about the target and its coordinates.
+                if (entityHitResult != null) {
                     user.getStackInHand(hand).setNbt(new NbtCompound());
                     NbtCompound nbt = user.getStackInHand(hand).getOrCreateNbt();
                     LivingEntity entity = (LivingEntity) entityHitResult.getEntity();
@@ -145,18 +134,15 @@ public class LocatorItem extends Item {
                     user.sendMessage(Text.literal("Target XYZ : " + ((int) entity.getX()) + " " + ((int) entity.getY()) + " " + ((int) entity.getZ())), false);
 
 
-                } else { // Block obtaining.
+                } else {
 
-                    // Raycasting similar to entity but returns the first block it hits, ignoring fluid blocks.
                     BlockHitResult blockHitResult = world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, user));
 
-                    if (blockHitResult == null) { // Unsuccessful.
+                    if (blockHitResult == null) {
                         user.sendMessage(Text.literal("Unable to obtain coordinates"), false);
                         return TypedActionResult.fail(itemStack);
 
                     } else {
-                        // Collects and stores all the necessary NBT data in the item.
-                        // Sends message to the player about the target and its coordinates.
                         BlockState blockState = world.getBlockState(blockHitResult.getBlockPos());
                         BlockPos position = blockHitResult.getBlockPos();
 
@@ -178,7 +164,6 @@ public class LocatorItem extends Item {
 
         return TypedActionResult.success(itemStack);
     }
-    // Changes the display text on the item according to the data stored.
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);

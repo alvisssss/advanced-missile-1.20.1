@@ -1,9 +1,10 @@
 {
-	"required": false,
+	"required": true,
 	"package": "net.alvisssss.advancedmissile.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"ExampleMixin"
+	"mixins": [],
+	"client": [
+		"FovChangeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
