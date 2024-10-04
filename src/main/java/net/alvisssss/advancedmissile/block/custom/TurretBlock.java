@@ -1,16 +1,12 @@
 package net.alvisssss.advancedmissile.block.custom;
 
-import net.alvisssss.advancedmissile.item.ModItems;
+import net.alvisssss.advancedmissile.block.entity.TurretBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -21,30 +17,55 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public class TurretBlock extends BlockWithEntity implements BlockEntityProvider {
 
+    private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
 
-public class TurretBlock extends Block { // Work In Progress.
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
 
     public TurretBlock(Settings settings) {
         super(settings);
     }
 
+    @Nullable
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == ModItems.MISSILE) {
-            NbtCompound nbt = itemStack.getNbt();
-
-
-            return ActionResult.SUCCESS;
-        }
-        return ActionResult.FAIL;
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new TurretBlockEntity(pos, state);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-        super.appendTooltip(stack, world, tooltip, options);
-        tooltip.add(Text.literal("WIP"));
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof TurretBlockEntity) {
+                ItemScatterer.spawn(world, pos, (TurretBlockEntity)blockEntity);
+            }
+            super.onStateReplaced(state, world, pos, newState, moved);
+        }
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        /*
+        if (!world.isClient) {
+            NamedScreenHandlerFactory screenHandlerFactory = ((TurretBlockEntity) world.getBlockEntity(pos));
+
+            if (screenHandlerFactory != null) {
+                player.openHandledScreen(screenHandlerFactory);
+            }
+        }
+
+         */
+
+
+        return ActionResult.SUCCESS;
     }
 }

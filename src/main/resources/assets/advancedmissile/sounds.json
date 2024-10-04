@@ -4,5 +4,15 @@
     "sounds": [
       "advancedmissile:empty_gun_click"
     ]
+  },
+  "missile_locking": {
+    "sounds": [
+      "advancedmissile:missile_locking"
+    ]
+  },
+  "missile_locked": {
+    "sounds": [
+      "advancedmissile:missile_locked"
+    ]
   }
 }

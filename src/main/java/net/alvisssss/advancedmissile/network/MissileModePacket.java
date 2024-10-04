@@ -5,11 +5,11 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
-public class MissileFirePacket {
-    public static final Identifier ID = new Identifier("advancedmissile", "missile_fire");
+public class MissileModePacket {
+    public static final Identifier ID = new Identifier("advancedmissile", "missile_mode");
 
     public static void send() {
         PacketByteBuf buf = PacketByteBufs.create();
-        ClientPlayNetworking.send(MissileFirePacket.ID, buf);
+        ClientPlayNetworking.send(MissileModePacket.ID, buf);
     }
 }

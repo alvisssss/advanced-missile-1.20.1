@@ -1,7 +1,7 @@
 package net.alvisssss.advancedmissile.mixin;
 
 import net.alvisssss.advancedmissile.item.custom.CommandLaunchUnitItem;
-import net.alvisssss.advancedmissile.util.IFovChangeMixin;
+import net.alvisssss.advancedmissile.util.SightManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -17,9 +17,11 @@ public abstract class FovChangeMixin {
     public void modifyFov(CallbackInfoReturnable<Float> cir) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
 
-        if (player.getStackInHand(player.getActiveHand()).getItem() instanceof CommandLaunchUnitItem && player.isUsingItem()
-        && MinecraftClient.getInstance().options.getPerspective().isFirstPerson()) {
-            cir.setReturnValue(0.1f);
+        if (player.getStackInHand(player.getActiveHand()).getItem() instanceof CommandLaunchUnitItem
+                && player.isUsingItem()
+                && MinecraftClient.getInstance().options.getPerspective().isFirstPerson()
+        ) {
+            cir.setReturnValue(SightManager.getZoomLevelReciprocal());
         }
     }
 }

@@ -12,7 +12,8 @@ public class ModItems {
 
     // New items
     public static final Item LAUNCHER = registerItem("launcher", new LauncherItem(new FabricItemSettings().maxCount(1))); // Uses LauncherItem class, only 1 item per stack.
-    public static final Item MISSILE = registerItem("missile", new MissileItem(new FabricItemSettings())); // Uses MissileItem class.
+    public static final Item TOMAHAWK_MISSILE = registerItem("tomahawk_missile", new TomahawkMissileItem(new FabricItemSettings()));
+    public static final Item JAVELIN_MISSILE = registerItem("javelin_missile", new JavelinMissileItem(new FabricItemSettings()));
     public static final Item LOCATOR = registerItem("locator", new LocatorItem(new FabricItemSettings().maxCount(1))); // Uses LocatorItem class, only 1 item per stack.
     public static final Item CLU = registerItem("command_launch_unit", new CommandLaunchUnitItem(new FabricItemSettings().maxCount(1)));
 

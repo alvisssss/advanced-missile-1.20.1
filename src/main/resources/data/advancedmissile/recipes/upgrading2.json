@@ -1,0 +1,12 @@
+{
+  "type": "advancedmissile:upgrading",
+  "ingredients": [
+    {
+      "item": "advancedmissile:javelin_missile"
+    }
+  ],
+  "output": {
+    "item": "advancedmissile:javelin_missile",
+    "count": 1
+  }
+}

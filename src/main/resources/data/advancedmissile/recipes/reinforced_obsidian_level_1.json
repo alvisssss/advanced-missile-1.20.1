@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:crying_obsidian"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "pattern": [
+    "DCD",
+    "CDC",
+    "DCD"
+  ],
+  "result": {
+    "item": "advancedmissile:reinforced_obsidian_level_1"
+  },
+  "show_notification": true
+}

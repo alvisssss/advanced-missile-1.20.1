@@ -8,6 +8,7 @@ import org.lwjgl.glfw.GLFW;
 public class Keybindings {
     public static KeyBinding reloadKey;
     public static KeyBinding fireKey;
+    public static KeyBinding modeKey;
     public static void registerKeybindings() {
         fireKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.advancedmissile.fire_missile",
@@ -20,6 +21,13 @@ public class Keybindings {
                 "key.advancedmissile.reload_missile",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_R,
+                "category.advancedmissile.controls"
+        ));
+
+        modeKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.advancedmissile.change_mode",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_M,
                 "category.advancedmissile.controls"
         ));
     }

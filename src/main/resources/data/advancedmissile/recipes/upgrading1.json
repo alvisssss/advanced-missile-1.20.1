@@ -2,11 +2,11 @@
   "type": "advancedmissile:upgrading",
   "ingredients": [
     {
-      "item": "advancedmissile:missile"
+      "item": "advancedmissile:tomahawk_missile"
     }
   ],
   "output": {
-    "item": "advancedmissile:missile",
+    "item": "advancedmissile:tomahawk_missile",
     "count": 1
   }
 }

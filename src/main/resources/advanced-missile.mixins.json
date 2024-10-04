@@ -2,9 +2,11 @@
 	"required": true,
 	"package": "net.alvisssss.advancedmissile.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"mixins": [],
+	"mixins": [
+	],
 	"client": [
-		"FovChangeMixin"
+		"FovChangeMixin",
+		"MouseScrollMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -16,17 +16,21 @@ public class ModItemGroups {
     public static final ItemGroup MISSILE_GROUP = Registry.register(Registries.ITEM_GROUP,
             new Identifier(AdvancedMissile.MOD_ID, "launcher"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.launcher"))
-                    .icon(() -> new ItemStack(ModItems.MISSILE)).entries((displayContext, entries) -> {
+                    .icon(() -> new ItemStack(ModItems.TOMAHAWK_MISSILE)).entries((displayContext, entries) -> {
 
-                        entries.add(ModItems.MISSILE);
+                        entries.add(ModItems.TOMAHAWK_MISSILE);
+                        entries.add(ModItems.JAVELIN_MISSILE);
                         entries.add(ModItems.LAUNCHER);
                         entries.add(ModItems.LOCATOR);
 
                         entries.add(ModItems.CLU);
-                        //entries.add(ModItems.LAUNCH_TUBE);
 
-                        entries.add(ModBlocks.TURRET_STATION);
+                        entries.add(ModBlocks.TURRET);
                         entries.add(ModBlocks.UPGRADING_FACTORY);
+
+                        entries.add(ModBlocks.REINFORCED_OBSIDIAN_LEVEL_1);
+                        entries.add(ModBlocks.REINFORCED_OBSIDIAN_LEVEL_2);
+
                     }).build());
 
     public static void registerItemGroups() {

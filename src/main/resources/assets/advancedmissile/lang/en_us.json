@@ -1,18 +1,23 @@
 {
   "item.advancedmissile.launcher" : "Launcher",
-  "item.advancedmissile.missile" : "Missile",
+  "item.advancedmissile.javelin_missile" : "Javelin Missile",
+  "item.advancedmissile.tomahawk_missile" : "Tomahawk Missile",
   "item.advancedmissile.locator" : "Locator",
   "item.advancedmissile.command_launch_unit" : "Command Launch Unit",
 
   "itemgroup.launcher": "Advanced Missile",
 
-  "block.advancedmissile.turret_station": "Turret Station",
+  "block.advancedmissile.turret_station": "Turret",
+  "block.advancedmissile.reinforced_obsidian_level_1": "Reinforced Obsidian Level 1",
+  "block.advancedmissile.reinforced_obsidian_level_2": "Reinforced Obsidian Level 2",
   "block.advancedmissile.upgrading_factory": "Upgrading Factory",
 
   "container.upgrade": "Upgrading Factory",
+  "container.turret": "Turret",
 
   "key.advancedmissile.fire_missile": "Fire",
   "key.advancedmissile.reload_missile": "Reload",
+  "key.advancedmissile.change_mode": "Change Missile Mode",
 
   "category.advancedmissile.controls": "Advanced Missile",
 

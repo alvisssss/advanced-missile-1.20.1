@@ -1,48 +1,20 @@
 package net.alvisssss.advancedmissile.item.custom;
 
 
-import com.google.common.collect.Lists;
 import net.alvisssss.advancedmissile.entity.custom.MissileEntity;
 import net.alvisssss.advancedmissile.item.ModItems;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 
@@ -60,7 +32,7 @@ public class LauncherItem extends RangedWeaponItem {
 
     @Override
     public Predicate<ItemStack> getHeldProjectiles() {
-        return itemStack -> ModItems.MISSILE.equals(itemStack.getItem());
+        return itemStack -> ModItems.TOMAHAWK_MISSILE.equals(itemStack.getItem());
     }
 
     @Override
@@ -136,14 +108,14 @@ public class LauncherItem extends RangedWeaponItem {
         // Search offhand first.
         if (hand == Hand.MAIN_HAND) {
             ItemStack stack = user.getInventory().getStack(45);
-            if (stack.getItem() == ModItems.MISSILE) {
+            if (stack.getItem() == ModItems.TOMAHAWK_MISSILE) {
                 return stack;
             }
         }
         // Search hotbar.
         for (int i = 36; i <= 44; i++) {
             ItemStack stack = user.getInventory().getStack(i);
-            if (stack.getItem() == ModItems.MISSILE) {
+            if (stack.getItem() == ModItems.TOMAHAWK_MISSILE) {
                 return stack;
             }
         }
@@ -151,7 +123,7 @@ public class LauncherItem extends RangedWeaponItem {
         for (int i = 0; i < user.getInventory().size(); i++) {
             if (i >= 36 && i <= 45) continue;
             ItemStack stack = user.getInventory().getStack(i);
-            if (stack.getItem() == ModItems.MISSILE) {
+            if (stack.getItem() == ModItems.TOMAHAWK_MISSILE) {
                 return stack;
             }
         }
@@ -165,7 +137,7 @@ public class LauncherItem extends RangedWeaponItem {
         NbtCompound nbt = missileStack.getOrCreateNbt();
         nbt.putFloat("speed", speed); // Speed recorded into the missile if needed.
 
-        MissileEntity missile1 = new MissileEntity(world, user, nbt); // Instantiates the missile entity.
+        MissileEntity missile1 = new MissileEntity(world, nbt); // Instantiates the missile entity.
 
         Vec3d vec3d = user.getOppositeRotationVector(1.0f);
         Quaternionf quaternionf = new Quaternionf().setAngleAxis(0.0f, vec3d.x, vec3d.y, vec3d.z);

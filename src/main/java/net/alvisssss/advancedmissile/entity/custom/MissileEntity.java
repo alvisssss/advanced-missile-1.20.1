@@ -1,18 +1,23 @@
 package net.alvisssss.advancedmissile.entity.custom;
 
+import net.alvisssss.advancedmissile.AdvancedMissile;
 import net.alvisssss.advancedmissile.entity.ModEntities;
 import net.alvisssss.advancedmissile.item.ModItems;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
+import net.alvisssss.advancedmissile.util.RealisticExplosion;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ChunkTicketType;
@@ -24,12 +29,14 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class MissileEntity extends ProjectileEntity {
@@ -46,6 +53,7 @@ public class MissileEntity extends ProjectileEntity {
 
     private boolean hit = false;
     private boolean hasTarget;
+    private boolean isPrecise = false;
 
     private int cooldownTimer = 20;
     private int deactivateCountdown = 200;
@@ -54,22 +62,29 @@ public class MissileEntity extends ProjectileEntity {
     private float additionalPower = 0.0f;
     private float speed;
 
-    private ItemStack MissileStack = new ItemStack(ModItems.MISSILE) ;
+    private String code;
+
+    private ItemStack missileStack = new ItemStack(ModItems.JAVELIN_MISSILE) ;
 
 
     public MissileEntity(EntityType<MissileEntity> missileEntityEntityType, World world) {
         super(missileEntityEntityType, world);
     }
 
-    public MissileEntity(World world, LivingEntity owner, NbtCompound nbt) {
-        // Extracting all data from the given NBT compound (if any) and putting them in class variables.
+    public MissileEntity(World world, NbtCompound nbt) {
+
         this(ModEntities.MISSILE, world);
 
-        NbtCompound nbtCompound = this.MissileStack.getOrCreateNbt();
+        NbtCompound nbtCompound = this.missileStack.getOrCreateNbt();
         nbtCompound.copyFrom(nbt);
 
-        this.setOwner(owner);
+        if (nbt.contains("isPrecise")) {
+            this.isPrecise = nbt.getBoolean("isPrecise");
+        }
 
+        if (nbt.contains("code")) {
+            this.code = nbt.getString("code");
+        }
         if (nbt.contains("fuel_count")) {
             this.deactivateCountdown += nbt.getInt("fuel_count") * 20;
         }
@@ -108,6 +123,10 @@ public class MissileEntity extends ProjectileEntity {
         }
     }
 
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return EntityDimensions.fixed(0.5f, 0.5f);
+    }
 
     @Override
     public SoundCategory getSoundCategory() {
@@ -129,6 +148,8 @@ public class MissileEntity extends ProjectileEntity {
         nbt.putDouble("TYD", this.targetY);
         nbt.putDouble("TZD", this.targetZ);
         nbt.putBoolean("hasTarget", this.hasTarget);
+
+        nbt.put("chunkPos", toNbtList(this.getChunkPos().x, this.getChunkPos().z));
     }
 
     @Override
@@ -154,54 +175,44 @@ public class MissileEntity extends ProjectileEntity {
         if (nbt.contains("hasTarget")) {
             this.hasTarget = nbt.getBoolean("hasTarget");
         }
-    }
-/*
-    @Override
-    protected ItemStack asItemStack() {
-        return this.MissileStack;
-    }
 
- */
+        if (nbt.contains("chunkPos")) {
+            NbtList list = nbt.getList("chunkPos", NbtElement.INT_TYPE);
+            ServerWorld world = (ServerWorld) this.getEntityWorld();
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    ChunkPos chunkPos = new ChunkPos(list.getInt(0) + dx, list.getInt(1) + dz);
+                    world.getChunkManager().addTicket(ChunkTicketType.PORTAL, chunkPos, 10, this.getBlockPos());
+                }
+            }
+        }
+
+    }
 
     @Override
     protected void initDataTracker() {
     }
 
-    // If game difficulty is peaceful, the missile despawns.
     @Override
     public void checkDespawn() {
         if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
             this.discard();
         }
     }
-    // Unloads 5x5 chunks around the missile to save resources on despawning.
-    private void unloadChunks() {
-        ServerWorld world = (ServerWorld) this.getEntityWorld();
-        for (int x = -2; x <= 2; x++) {
-            for (int z = -2; z <= 2; z++) {
-                ChunkPos chunkPos = new ChunkPos(this.getChunkPos().x + x, this.getChunkPos().z + z);
-                world.getChunkManager().setChunkForced(chunkPos, false);
-            }
-        }
-    }
-    // Utilizes raycasting to check for any collision between the entity and the target.
+
     private boolean hasDirectViewOfTarget(Vec3d targetPos) {
         HitResult result;
         result = this.getWorld().raycast(new RaycastContext(this.getPos(), targetPos, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
         return result == null || result.getType() == HitResult.Type.MISS;
     }
-    // Uses cosine function to determine the steering force of the missile.
-    // angle is the angle between the vector of the missile's direction, and the vector directly towards the target from the missile.
-    // In short, larger angle = rough adjustment. smaller angle = precise adjustment.
+
     private void computeSteeringForce(Vec3d targetDirection, Vec3d currentDirection) {
         double dotProduct = currentDirection.dotProduct(targetDirection);
         double angle = Math.acos(dotProduct / (currentDirection.length() * targetDirection.length())) / Math.PI;
-        if (Double.isNaN(angle)) {
-            angle = 1.0;
-        }
+        if (Double.isNaN(angle)) {angle = 1.0;}
         this.steeringForce = Math.abs(angle) * 0.6 + 0.25;
     }
-    // Change the vector of the missile to a new direction.
+
     private void moveTowardsTarget(boolean isEntity) {
 
         Vec3d targetPos;
@@ -229,6 +240,56 @@ public class MissileEntity extends ProjectileEntity {
         this.setVelocity(newVelocity);
 
     }
+    private void updateVelocity(int control) {
+        switch (control) {
+            default:
+                this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+                break;
+            case 1, 2:
+                break;
+        }
+    }
+
+    private void handleSolidBlockCollision() {
+        BlockPos blockPos = this.getBlockPos();
+        BlockState blockState = this.getWorld().getBlockState(blockPos);
+
+        if (!blockState.isAir() && !blockState.getFluidState().isEmpty()) {
+            VoxelShape collisionShape = blockState.getCollisionShape(this.getWorld(), blockPos);
+
+            if (!collisionShape.isEmpty()) {
+                Box missileBox = this.getBoundingBox();
+                Vec3d motion = this.getVelocity();
+
+                // Calculate intersection with the collision shape
+                Optional<Vec3d> closestPointOptional = collisionShape.getClosestPointTo(motion);
+
+                if (closestPointOptional.isPresent()) {
+
+                    Vec3d closestPoint = closestPointOptional.get();
+
+                    Vec3d newMotion = this.getPos().add(motion).subtract(closestPoint);
+                    // Check if collision resolves mainly in horizontal direction
+                    double dx = newMotion.x - motion.x;
+                    double dy = newMotion.y - motion.y;
+                    double dz = newMotion.z - motion.z;
+
+                    // Adjust missile's motion based on collision resolution
+                    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > Math.abs(dz)) {
+                        newMotion = newMotion.subtract(dx, 0, 0); // Cancel horizontal x-motion
+                    } else if (Math.abs(dz) > Math.abs(dx) && Math.abs(dz) > Math.abs(dy)) {
+                        newMotion = newMotion.subtract(0, 0, dz); // Cancel horizontal z-motion
+                    } else if (Math.abs(dy) > 0.01 && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > Math.abs(dz)) {
+                        newMotion = newMotion.subtract(0, dy, 0); // Cancel vertical y-motion if hitting ground at an angle
+                    }
+
+                    // Update missile's position and velocity
+                    this.updatePosition(this.getX() + newMotion.x, this.getY() + newMotion.y, this.getZ() + newMotion.z);
+                    this.setVelocity(newMotion);
+                }
+            }
+        }
+    }
 
     @Override
     public void tick() {
@@ -239,10 +300,10 @@ public class MissileEntity extends ProjectileEntity {
 
             if (this.getPos() == null) {
                 this.discard();
-                unloadChunks();
             }
 
-            // Try to retrieve the target entity from the UUID.
+            // Save positions and velocities
+
             if (this.target == null && this.targetUuid != null) {
                 this.target = ((ServerWorld)this.getWorld()).getEntity(this.targetUuid);
                 if (this.target == null) {
@@ -250,21 +311,25 @@ public class MissileEntity extends ProjectileEntity {
                 }
             }
 
-            // Loads chunks around entity.
-            // ChunkTicketType.PORTAL makes the chunk load for 15s, after which it unloads automatically.
             ServerWorld world = (ServerWorld) this.getEntityWorld();
-            world.getChunkManager().addTicket(ChunkTicketType.PORTAL, this.getChunkPos(), 2, this.getBlockPos());
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    ChunkPos chunkPos = new ChunkPos(this.getChunkPos().x + dx, this.getChunkPos().z + dz);
+                    world.getChunkManager().addTicket(ChunkTicketType.PORTAL, chunkPos, 10, this.getBlockPos());
+                }
+            }
+
+            AdvancedMissile.LOGGER.info(this.getX() + String.valueOf(this.getY()) + this.getZ());
 
             // Case entity and entity valid.
             if (this.situation == 1 && !this.hit && !(this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && this.target.isSpectator())) {
-
                 if (hasDirectViewOfTarget(this.target.getPos()) && this.cooldownTimer <= 0 && this.deactivateCountdown > 0) {
 
                     moveTowardsTarget(true);
 
                 } else {
 
-                    this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));// Free fall
+                    this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
                     this.cooldownTimer--;
                 }
 
@@ -279,7 +344,7 @@ public class MissileEntity extends ProjectileEntity {
                     moveTowardsTarget(false);
 
                 } else {
-                    this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));// Free fall
+                    this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
                     cooldownTimer--;
                 }
 
@@ -288,12 +353,13 @@ public class MissileEntity extends ProjectileEntity {
                 }
 
                 double distance = this.squaredDistanceTo(new Vec3d(MathHelper.floor(this.targetX) + 0.5, MathHelper.floor(this.targetY) + 0.5, MathHelper.floor(this.targetZ) + 0.5));
-                if (distance <= 4.0) {
+                if (distance <= 9.0) {
                     this.hit = true;
                 }
 
             } else { // No target
-                this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0)); // Free fall
+                this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+                if (this.cooldownTimer > 0) cooldownTimer--;
             }
 
 
@@ -303,15 +369,14 @@ public class MissileEntity extends ProjectileEntity {
             }
         }
 
-
-        //Setting the new position of the entity after changing its velocity.
         this.checkBlockCollision();
         vec3d = this.getVelocity();
         this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
         ProjectileUtil.setRotationFromVelocity(this, ((float) this.steeringForce));
 
         if (this.getWorld().isClient) {
-            this.getWorld().addParticle(ParticleTypes.LARGE_SMOKE, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);
+            this.getWorld().addParticle(ParticleTypes.CLOUD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z,
+                    this.getVelocity().x * -0.1, this.getVelocity().y * -0.1, this.getVelocity().z * -0.1);
         }
     }
 
@@ -337,43 +402,42 @@ public class MissileEntity extends ProjectileEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        //if (this.cooldownTimer <= 0) { // Creates an explosion with size according to the input ingredients.
-            this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
-        //}
+        super.onEntityHit(entityHitResult);
+        AdvancedMissile.LOGGER.info("Entity Hit"); // Not calling because it missed...
+        if (this.cooldownTimer <= 0) {
+            new RealisticExplosion(this.getEntityWorld(), this, this.getX(), this.getBodyY(0.0625), this.getZ(), this.additionalPower, null, entityHitResult.getEntity(), this.isPrecise);
+        }
         this.hit = true;
-        // Despawns and unloads chunks.
-        this.discard();
-        unloadChunks();
     }
 
     @Override
     protected void onBlockHit(BlockHitResult blockHitResult) {
         super.onBlockHit(blockHitResult);
 
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("End Position: " + this.getPos()));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal(" Time: " + this.getWorld().getTimeOfDay()));
+
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState blockState = this.getWorld().getBlockState(blockPos);
 
-        if (blockState.getFluidState().isEmpty()) { // If block hit is not a fluid block.
-            //if (this.cooldownTimer <= 0) { // Creates an explosion with size according to the input ingredients.
-                this.getWorld().createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f + this.additionalPower, World.ExplosionSourceType.TNT);
-            //}
+        if (blockState.getFluidState().isEmpty()) {
+            if (this.cooldownTimer <= 0) {
+                new RealisticExplosion(this.getEntityWorld(), this, this.getX(), this.getBodyY(0.0625), this.getZ(), this.additionalPower, blockPos, null, this.isPrecise);
+            }
             this.hit = true;
-            // Despawns and unloads chunks.
-            this.discard();
-            unloadChunks();
         }
     }
-
-    private void destroy() {
-        this.discard();
-        this.getWorld().emitGameEvent(GameEvent.ENTITY_DAMAGE, this.getPos(), GameEvent.Emitter.of(this));
-    }
-
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         this.destroy();
     }
+    private void destroy() {
+        this.discard();
+        this.getWorld().emitGameEvent(GameEvent.ENTITY_DAMAGE, this.getPos(), GameEvent.Emitter.of(this));
+    }
+
+
 
     @Override
     public boolean canHit() {

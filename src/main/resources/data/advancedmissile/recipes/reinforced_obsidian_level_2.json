@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "advancedmissile:reinforced_obsidian_level_1"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "NRN",
+    "RNR",
+    "NRN"
+  ],
+  "result": {
+    "item": "advancedmissile:reinforced_obsidian_level_2"
+  },
+  "show_notification": true
+}

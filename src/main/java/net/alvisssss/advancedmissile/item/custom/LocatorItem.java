@@ -30,6 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Objects;
@@ -95,8 +96,9 @@ public class LocatorItem extends Item {
         if (!world.isClient()) {
 
             int maxDistance = 500;
-            Vec3d vec3d = user.getCameraPosVec(0.0f);
-            Vec3d vec3d2 = vec3d.add(user.getRotationVec(0.0f).multiply(100));
+            /*
+            Vec3d vec3d = user.getCameraPosVec(1.0f);
+            Vec3d vec3d2 = vec3d.add(user.getRotationVec(1.0f).multiply(100d));
 
             double boxSize = 1.0;
 
@@ -111,7 +113,16 @@ public class LocatorItem extends Item {
                     Math.max(vec3d.z, vec3d2.z) + boxSize
             );
 
-            EntityHitResult entityHitResult = ProjectileUtil.raycast(user, vec3d, vec3d2, new Box(minCorner, maxCorner), entity -> true, maxDistance);
+             */
+
+            double d = 100d;
+            Entity entity2 = MinecraftClient.getInstance().getCameraEntity();
+            Vec3d vec3d = entity2.getCameraPosVec(1.0f);
+            Vec3d vec3d2 = entity2.getRotationVec(1.0f);
+            Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
+            float f = 1.0f;
+            Box box = entity2.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
+            EntityHitResult entityHitResult = ProjectileUtil.raycast(entity2, vec3d, vec3d3, box, entity -> !entity.isSpectator() && entity.canHit(), d);
 
             if (!user.getItemCooldownManager().isCoolingDown(this)) {
 
@@ -164,6 +175,8 @@ public class LocatorItem extends Item {
 
         return TypedActionResult.success(itemStack);
     }
+
+
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
